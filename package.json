@@ -1,0 +1,14 @@
+{
+  "name": "googshift",
+  "version": "1.0.0",
+  "description": "Tool for modernizing a goog compiler application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Guillaume Beraudo",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "jscodeshift": "^0.3.30"
+  }
+}
