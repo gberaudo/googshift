@@ -1,71 +1,12 @@
-function getGoogExpressionStatement(identifier) {
-  return {
-    type: 'ExpressionStatement',
-    expression: {
-      type: 'CallExpression',
-      callee: {
-        type: 'MemberExpression',
-        object: {
-          type: 'Identifier',
-          name: 'goog'
-        },
-        property: {
-          type: 'Identifier',
-          name: identifier
-        }
-      }
-    }
-  };
-}
-
-function rename(name) {
-  const parts = name.split('.');
-  if (parts.length === 1) {
-    return name + 'Base'; // avoid conflicts with global window[name]
-  }
-  return parts.map((part, index) => {
-    if (index === 0) {
-      return part;
-    } else {
-      return part[0].toUpperCase() + part.substring(1, part.length);
-    }
-  }).join('');
-}
-
-
-function getMemberExpression(name) {
-  function memberExpression(parts) {
-    const dotIndex = parts.lastIndexOf('.');
-    if (dotIndex > 0) {
-      return {
-        type: 'MemberExpression',
-        object: memberExpression(parts.slice(0, dotIndex)),
-        property: {
-          type: 'Identifier',
-          name: parts.slice(dotIndex + 1)
-        }
-      };
-    } else {
-      return {
-        type: 'Identifier',
-        name: parts
-      };
-    }
-  }
-  return memberExpression(name);
-}
-
-
-function stringify(object) {
-  return JSON.stringify(object, null, '\t');
-};
+import {getGoogExpressionStatement, rename, getMemberExpression, stringify} from './util';
 
 
 export default (info, api, options) => {
   const j = api.jscodeshift;
   const root = j(info.source);
 
-  const noRewriteRequires = options['skip-requires'] || [];
+
+  const noRewriteRequires = options['skip-requires'] ? options['skip-requires'].split(',') : [];
   const declareLegacy = typeof options.legacy !== undefined ? options.legacy : false;
 
   const replacements = {};
@@ -90,13 +31,13 @@ export default (info, api, options) => {
   root.find(j.ExpressionStatement, getGoogExpressionStatement('require'))
     .forEach(path => {
       const name = path.value.expression.arguments[0].value;
-      noRewriteRequires.some(prefix => name.indexOf(prefix) === 0)
+      noRewriteRequires.some(prefix => name.indexOf(prefix) === 0);
       if (noRewriteRequires.some(prefix => name.indexOf(prefix) === 0)) {
         return;
       }
       const alias = rename(name);
       replacements[name] = alias;
-      const assignment = j.variableDeclaration("const", [
+      const assignment = j.variableDeclaration('const', [
         j.variableDeclarator(
           j.identifier(alias),
           path.node.expression

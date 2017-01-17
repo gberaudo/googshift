@@ -1,4 +1,4 @@
 Example use:
 
-node_modules/.bin/jscodeshift -t ./provide.js ~/dev/suisseapline/ui/suissealpine/static/js/  ~/dev/suisseapline/ui/suissealpine/static/modules/ --ignore-pattern goog
+node_modules/.bin/jscodeshift -t transforms/goog_provide_to_goog_module.js ~/dev/suisseapline/ui/suissealpine/static/js/  ~/dev/suisseapline/ui/suissealpine/static/modules/ --ignore-pattern goog --skip-requires goog,ol,ngeo
 
