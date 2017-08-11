@@ -1,9 +1,9 @@
-import {
+const {
   getAssignmentExpressionStatement, getGoogExpressionStatement, getGoog2ExpressionStatement,
-  getGoogVariableDeclaration, symbolToRelativePath} from './util';
+  getGoogVariableDeclaration, symbolToRelativePath} = require('./util');
 
 
-export default (info, api, options) => {
+module.exports = (info, api, options) => {
   const j = api.jscodeshift;
   const root = j(info.source);
 

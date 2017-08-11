@@ -1,7 +1,7 @@
-import {getGoogExpressionStatement, rename, getMemberExpression, stringify} from './util';
+const {getGoogExpressionStatement, rename, getMemberExpression, stringify} = require('./util');
 
 
-export default (info, api, options) => {
+module.exports = (info, api, options) => {
   const j = api.jscodeshift;
   const root = j(info.source);
 

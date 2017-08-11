@@ -1,4 +1,4 @@
-export function getAssignmentExpressionStatement(identifier) {
+module.exports.getAssignmentExpressionStatement = function(identifier) {
   return {
     type: 'ExpressionStatement',
     expression: {
@@ -11,7 +11,7 @@ export function getAssignmentExpressionStatement(identifier) {
   };
 }
 
-export function getGoogExpressionStatement(identifier) {
+module.exports.getGoogExpressionStatement = function(identifier) {
   return {
     type: 'ExpressionStatement',
     expression: {
@@ -31,7 +31,7 @@ export function getGoogExpressionStatement(identifier) {
   };
 }
 
-export function getGoog2ExpressionStatement(identifier1, identifier2) {
+module.exports.getGoog2ExpressionStatement = function(identifier1, identifier2) {
   return {
     type: 'ExpressionStatement',
     expression: {
@@ -58,7 +58,7 @@ export function getGoog2ExpressionStatement(identifier1, identifier2) {
   };
 }
 
-export function getGoogVariableDeclaration(identifier) {
+module.exports.getGoogVariableDeclaration = function(identifier) {
   return {
     init: {
       type: 'CallExpression',
@@ -77,7 +77,7 @@ export function getGoogVariableDeclaration(identifier) {
   };
 }
 
-export function rename(name) {
+module.exports.rename = function(name) {
   const parts = name.split('.');
   if (parts.length === 1) {
     return name + 'Base'; // avoid conflicts with global window[name]
@@ -92,7 +92,7 @@ export function rename(name) {
 }
 
 
-export function getMemberExpression(name) {
+module.exports.getMemberExpression = function(name) {
   function memberExpression(parts) {
     const dotIndex = parts.lastIndexOf('.');
     if (dotIndex > 0) {
@@ -115,12 +115,12 @@ export function getMemberExpression(name) {
 }
 
 
-export function stringify(object) {
+module.exports.stringify = function(object) {
   return JSON.stringify(object, null, '\t');
 };
 
 
-export function symbolToRelativePath(moduleName, name) {
+module.exports.symbolToRelativePath = function (moduleName, name) {
   const moduleParts = moduleName.split('.');
   const parts = name.split('.');
 
