@@ -9,7 +9,8 @@ module.exports.getAssignmentExpressionStatement = function(identifier) {
       }
     }
   };
-}
+};
+
 
 module.exports.getGoogExpressionStatement = function(identifier) {
   return {
@@ -29,7 +30,8 @@ module.exports.getGoogExpressionStatement = function(identifier) {
       }
     }
   };
-}
+};
+
 
 module.exports.getGoog2ExpressionStatement = function(identifier1, identifier2) {
   return {
@@ -56,7 +58,8 @@ module.exports.getGoog2ExpressionStatement = function(identifier1, identifier2) 
       }
     }
   };
-}
+};  
+
 
 module.exports.getGoogVariableDeclaration = function(identifier) {
   return {
@@ -75,7 +78,19 @@ module.exports.getGoogVariableDeclaration = function(identifier) {
       }
     }
   };
-}
+};
+
+
+module.exports.getImportDeclaration = function(value) {
+  return {
+    type: 'ImportDeclaration',
+    source: {
+      type: 'StringLiteral',
+      value
+    }
+  };
+};
+
 
 module.exports.rename = function(name) {
   const parts = name.split('.');
@@ -89,7 +104,7 @@ module.exports.rename = function(name) {
     return part[0].toUpperCase() + part.substring(1, part.length);
   }
 }).join('');
-}
+};
 
 
 module.exports.getMemberExpression = function(name) {
@@ -112,7 +127,7 @@ module.exports.getMemberExpression = function(name) {
     }
   }
   return memberExpression(name);
-}
+};
 
 
 module.exports.stringify = function(object) {
@@ -152,4 +167,45 @@ module.exports.symbolToRelativePath = function (moduleName, name) {
     relative += 'index';
   }
   return relative;
+};
+
+
+/**
+ * Transforms a relative path to a symbol.
+ * Example:
+ * ('app/strings/violin.js', './cello.js') => 'app.strings.cello'
+ * @param referencePath
+ * @param relativePath
+ * @return {string} symbol
+ */
+module.exports.relativePathToSymbol = function (referencePath, relativePath) {
+  const referenceParts = referencePath.split('/');
+  referenceParts.pop(); // pop the filename
+  const relativeParts = relativePath.split('/');
+
+  while (relativeParts.length > 0) {
+    const part = relativeParts[0];
+    if (part === '..') {
+      referenceParts.pop();
+    } else if (part !== '.') {
+      return [...referenceParts, ...relativeParts].join('.');
+    }
+    relativeParts.shift();
+  }
+
+  // /!\ toLowerCase
+  };
+
+
+module.exports.createGoogRequireAssignment = function(j, identifier, symbol) {
+  const expression = j.callExpression(
+    j.identifier('goog.require'),
+    [j.literal(symbol)]);
+
+  return j.variableDeclaration('const', [
+    j.variableDeclarator(
+      j.identifier(identifier),
+      expression
+    )
+  ]);
 };
