@@ -7,6 +7,9 @@ module.exports = (info, api, options) => {
   const j = api.jscodeshift;
   const root = j(info.source);
 
+  // store any initial comments
+  const {comments} = root.find(j.Program).get('body', 0).node;
+
   let currentModuleSymbol;
 
   // Remove goog.module.declareLegacyNamespace
@@ -73,13 +76,24 @@ module.exports = (info, api, options) => {
           j.objectExpression([])
         )]);
 
-      // See https://github.com/facebook/jscodeshift/blob/master/recipes/retain-first-comment.md
-      //const getFirstNode = () => root.find(j.Program).get('body', 0).node;
-      //const {comments} = getFirstNode();
       root.find(j.Program).get('body').unshift(declaration);
-      //getFirstNode().comments = comments;
     }
     root.find(j.Program).get('body').push(j.exportDefaultDeclaration(j.identifier('exports')));
+  }
+
+  // replace any initial comments
+  root.get().node.comments = comments;
+
+  // add @module annotation for src modules
+  if (info.path.startsWith('src')) {
+    const name = info.path.replace(/^src\//, '').replace(/\.js$/, '');
+    const comment = j.commentBlock(`*\n * @module ${name}\n `);
+    const node = root.get().node;
+    if (!node.comments) {
+      node.comments = [comment];
+    } else {
+      node.comments.unshift(comment);
+    }
   }
 
   return root.toSource({quote: 'single'});
