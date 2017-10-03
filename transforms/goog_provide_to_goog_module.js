@@ -50,10 +50,18 @@ module.exports = (info, api, options) => {
   Object.keys(replacements).sort().reverse().forEach(name => {
     if (name.indexOf('.') > 0) {
       root.find(j.MemberExpression, getMemberExpression(name))
-        .replaceWith(j.identifier(replacements[name]));
+        .replaceWith(path => {
+          const expression = j.identifier(replacements[name]);
+          expression.comments = path.value.comments;
+          return expression;
+        });
     } else {
       root.find(j.Identifier, {name: name})
-        .replaceWith(j.identifier(replacements[name]));
+        .replaceWith(path => {
+          const expression = j.identifier(replacements[name]);
+          expression.comments = path.value.comments;
+          return expression;
+        });
     }
   });
 
