@@ -144,7 +144,7 @@ module.exports.symbolToRelativePath = function (moduleName, name) {
       parts[0] = 'ngeo6';
     }
 
-    return parts.join('/').toLowerCase();
+    return parts.join('/');
   }
 
   const moduleLength = moduleParts.length;
@@ -162,7 +162,7 @@ module.exports.symbolToRelativePath = function (moduleName, name) {
     parts[0] = 'ngeo6';
   }
   const back = new Array(moduleLength - commonDepth).join('../') || './';
-  let relative = back + parts.slice(commonDepth).join('/').toLowerCase();
+  let relative = back + parts.slice(commonDepth).join('/');
   if (relative.endsWith('/')) {
     relative += 'index';
   }
@@ -192,9 +192,7 @@ module.exports.relativePathToSymbol = function (referencePath, relativePath) {
     }
     relativeParts.shift();
   }
-
-  // /!\ toLowerCase
-  };
+};
 
 
 module.exports.createGoogRequireAssignment = function(j, identifier, symbol) {
