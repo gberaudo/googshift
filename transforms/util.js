@@ -166,7 +166,7 @@ module.exports.symbolToRelativePath = function (moduleName, name) {
   if (relative.endsWith('/')) {
     relative += 'index';
   }
-  return relative;
+  return relative + '.js';
 };
 
 
