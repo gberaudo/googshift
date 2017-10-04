@@ -7,6 +7,16 @@ module.exports = (info, api, options) => {
   const j = api.jscodeshift;
   const root = j(info.source);
 
+  // parse source-roots option
+  let sourceRoots = new Map();
+  if (options['source-roots']) {
+    for (const path of options['source-roots'].split(',')) {
+      const split = path.split('/');
+      const key = split.pop();
+      sourceRoots.set(key, split);
+    }
+  }
+
   // store any initial comments
   const {comments} = root.find(j.Program).get('body', 0).node;
 
@@ -31,10 +41,16 @@ module.exports = (info, api, options) => {
   // Append  "export default exports;" to the body
   const noExport = !currentModuleSymbol;
   if (noExport) {
-    if (!options['allow-no-goog-module'] ) {
-      throw new Error('No goog.module found in this file');
+    if (options['missing-module-mapping']) {
+      const mapping = new Map();
+      for (const path of options['missing-module-mapping'].split(',')) {
+        if (info.path.startsWith(path)) {
+          currentModuleSymbol = info.path.replace(path, path.split('/').pop()).replace(/\./g, '_').replace(/\//g, '.').replace(/_js$/, '');
+          console.log('Fake module', currentModuleSymbol);
+          break;
+        }
+      }
     }
-    currentModuleSymbol = 'a.fake.symbol.since.there.is.no.module.in.this.file';
   }
 
   // Transform "const xx = goog.require('X.Y.Z');" into a relative path like "import xx from '../Y/Z';"
@@ -42,11 +58,11 @@ module.exports = (info, api, options) => {
     const name = path.value.id.name;
     const symbol = path.value.init.arguments[0].value;
     if (!name) {
-      throw new Error('Could not transform symbol ' + symbol + '; note that unstructuring is not supported');
+      throw new Error('Could not transform symbol ' + symbol + '; note that destructuring is not supported');
     }
     const importStatement = j.importDeclaration(
       [j.importDefaultSpecifier(j.identifier(name))],
-      j.literal(symbolToRelativePath(currentModuleSymbol, symbol))
+      j.literal(symbolToRelativePath(currentModuleSymbol, symbol, sourceRoots))
     );
     path.parent.replace(importStatement);
   });
