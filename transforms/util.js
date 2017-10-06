@@ -135,21 +135,47 @@ module.exports.stringify = function(object) {
 };
 
 
-module.exports.symbolToRelativePath = function (moduleName, name) {
-  const moduleParts = moduleName.split('.');
-  const parts = name.split('.');
+function findDivergingPart(path1, path2) {
+  const split1 = path1.split('/');
+  const split2 = path2.split('/');
+  const maxSearch = Math.min(split1.length, split2.length);
+  for (let i = 0; i < maxSearch; ++i) {
+    if (split1[i] !== split2[i]) {
+      return {
+        extract1: split1.slice(i, split1.length),
+        extract2: split2.slice(i, split2.length),
+      }
+    }
+  }
+  throw new Error(`Can not found diverging parts in ${path1} and ${path2}`);
+}
+
+module.exports.symbolToRelativePath = function (moduleName, name, sourceRoots) {
+  let moduleParts = moduleName.split('.');
+  let parts = name.split('.');
+  let commonDepth = 1;
 
   if (moduleParts[0] !== parts[0]) {
     if (parts[0] === 'ngeo') {
       parts[0] = 'ngeo6';
     }
 
-    return parts.join('/');
+    if (!sourceRoots || !sourceRoots.has(parts[0])) {
+      return parts.join('/');
+    }
+
+    if (!sourceRoots.has(moduleParts[0])) {
+      throw new Error(`Source roots lack the module name ${moduleName}`);
+    }
+    const extracts = findDivergingPart(moduleParts[0], parts[0]);
+    extracts.extract1.pop();
+    extracts.extract2.pop();
+    moduleParts = [...extracts.extract1, ...moduleParts];
+    parts = [...extracts.extract2, ...parts];
+    commonDepth = 0;
   }
 
   const moduleLength = moduleParts.length;
-  let commonDepth = 1;
-
   while (commonDepth < moduleLength - 2) {
     if (moduleParts[commonDepth] === parts[commonDepth]) {
       ++commonDepth;
