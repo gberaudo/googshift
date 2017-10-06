@@ -1,9 +1,14 @@
 const glob = require('glob');
 const fs = require('fs');
 const path = require('path');
+const process = require('process');
 
-const pattern = process.argv[2]
-glob(pattern, {}, function(err, files) {
+const newPwd = process.argv[2];
+const pattern = process.argv[3];
+
+process.chdir(newPwd);
+
+glob(pattern, {matchBase:true}, function(err, files) {
   if (!err) {
     process.stdout.write(`Checking ${files.length} files...\n`);
     let renamed = 0;
