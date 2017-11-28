@@ -233,3 +233,13 @@ module.exports.createGoogRequireAssignment = function(j, identifier, symbol) {
     )
   ]);
 };
+
+module.exports.prependModuleAnnotation = function(j, root) {
+  const comment = j.commentBlock(`*\n * @module\n `);
+  const node = root.get().node;
+  if (!node.comments) {
+    node.comments = [comment];
+  } else {
+    node.comments.unshift(comment);
+  }
+};

@@ -1,6 +1,7 @@
 const {
   getAssignmentExpressionStatement, getGoogExpressionStatement, getGoog2ExpressionStatement,
   getGoogVariableDeclaration, symbolToRelativePath} = require('./util');
+const util = require('./util');
 
 
 module.exports = (info, api, options) => {
@@ -99,17 +100,8 @@ module.exports = (info, api, options) => {
   // replace any initial comments
   root.get().node.comments = comments;
 
-  // add @module annotation for src modules
-  if (info.path.startsWith('src')) {
-    const name = info.path.replace(/^src\//, '').replace(/\.js$/, '');
-    const comment = j.commentBlock(`*\n * @module ${name}\n `);
-    const node = root.get().node;
-    if (!node.comments) {
-      node.comments = [comment];
-    } else {
-      node.comments.unshift(comment);
-    }
-  }
+  // add @module annotation
+  util.prependModuleAnnotation(j, root);
 
   return root.toSource({quote: 'single'});
 };
