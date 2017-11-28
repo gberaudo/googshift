@@ -4,8 +4,8 @@ module.exports.getAssignmentExpressionStatement = function(identifier) {
     expression: {
       type: 'AssignmentExpression',
       left: {
-          type: 'Identifier',
-          name: identifier
+        type: 'Identifier',
+        name: identifier
       }
     }
   };
@@ -98,12 +98,12 @@ module.exports.rename = function(name) {
     return name + 'Base'; // avoid conflicts with global window[name]
   }
   return parts.map((part, index) => {
-      if (index === 0) {
-    return part;
-  } else {
-    return part[0].toUpperCase() + part.substring(1, part.length);
-  }
-}).join('');
+    if (index === 0) {
+      return part;
+    } else {
+      return part[0].toUpperCase() + part.substring(1, part.length);
+    }
+  }).join('');
 };
 
 
@@ -144,7 +144,7 @@ function findDivergingPart(path1, path2) {
       return {
         extract1: split1.slice(i, split1.length),
         extract2: split2.slice(i, split2.length),
-      }
+      };
     }
   }
   throw new Error(`Can not found diverging parts in ${path1} and ${path2}`);
@@ -235,7 +235,7 @@ module.exports.createGoogRequireAssignment = function(j, identifier, symbol) {
 };
 
 module.exports.prependModuleAnnotation = function(j, root) {
-  const comment = j.commentBlock(`*\n * @module\n `);
+  const comment = j.commentBlock('*\n * @module\n ');
   const node = root.get().node;
   if (!node.comments) {
     node.comments = [comment];

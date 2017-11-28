@@ -1,6 +1,6 @@
 const util = require('./util');
 
-module.exports = (info, api, options) => {
+module.exports = (info, api) => {
   const j = api.jscodeshift;
   const root = j(info.source);
 
