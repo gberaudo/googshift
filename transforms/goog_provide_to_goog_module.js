@@ -1,4 +1,4 @@
-const {getGoogExpressionStatement, rename, getMemberExpression, stringify} = require('./util');
+const {getGoogExpressionStatement, rename, getMemberExpression} = require('./util');
 
 
 module.exports = (info, api, options) => {
@@ -42,7 +42,7 @@ module.exports = (info, api, options) => {
           j.identifier(alias),
           path.node.expression
         )
-        ]);
+      ]);
       path.replace(assignment);
     });
 

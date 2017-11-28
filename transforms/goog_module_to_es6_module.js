@@ -43,7 +43,6 @@ module.exports = (info, api, options) => {
   const noExport = !currentModuleSymbol;
   if (noExport) {
     if (options['missing-module-mapping']) {
-      const mapping = new Map();
       for (const path of options['missing-module-mapping'].split(',')) {
         if (info.path.startsWith(path)) {
           currentModuleSymbol = info.path.replace(path, path.split('/').pop()).replace(/\./g, '_').replace(/\//g, '.').replace(/_js$/, '');

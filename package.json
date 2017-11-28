@@ -8,7 +8,7 @@
   ],
   "description": "Transform for migrating a Google compiler application to ES6 modules",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "make check"
   },
   "url": "https://github.com/gberaudo/googshift/issues",
   "repository": "https://github.com/gberaudo/googshift",
@@ -18,5 +18,8 @@
     "glob": "7.1.2",
     "jscodeshift": "^0.3.30",
     "path": "0.12.7"
+  },
+  "devDependencies": {
+    "eslint": "^4.12.0"
   }
 }
