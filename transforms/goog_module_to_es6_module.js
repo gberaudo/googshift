@@ -107,7 +107,7 @@ module.exports = (info, api, options) => {
 
       root.find(j.Program).get('body').unshift(declaration);
     }
-    root.find(j.Program).get('body').push(j.exportDefaultDeclaration(j.identifier('exports')));
+    root.find(j.Program).get('body').push('\nexport default exports;\n');
   }
 
   // replace any initial comments
