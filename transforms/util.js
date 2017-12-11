@@ -234,8 +234,8 @@ module.exports.createGoogRequireAssignment = function(j, identifier, symbol) {
   ]);
 };
 
-module.exports.prependModuleAnnotation = function(j, root) {
-  const comment = j.commentBlock('*\n * @module\n ');
+module.exports.prependModuleAnnotation = function(j, root, name) {
+  const comment = j.commentBlock(`*\n * @module ${name}\n`);
   const node = root.get().node;
   if (!node.comments) {
     node.comments = [comment];

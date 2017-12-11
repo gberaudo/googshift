@@ -22,6 +22,7 @@ module.exports = (info, api, options) => {
   const {comments} = root.find(j.Program).get('body', 0).node;
 
   let currentModuleSymbol;
+  let addModule = false;
 
   // Remove goog.module.declareLegacyNamespace
   root.find(j.ExpressionStatement, getGoog2ExpressionStatement('module', 'declareLegacyNamespace'))
@@ -37,6 +38,19 @@ module.exports = (info, api, options) => {
       }
       currentModuleSymbol = path.value.expression.arguments[0].value;
       path.replace();
+
+      addModule = true;
+      if (comments) {
+        for (const comment of comments) {
+          if (comment.value.indexOf('@module') >= 0) {
+            addModule = false;
+            const module = comment.value.match(/@module (.*)/g);
+            if (module != currentModuleSymbol) {
+              throw new Error('The @module does not have the right value');
+            }
+          }
+        }
+      }
     });
 
   // Append  "export default exports;" to the body
@@ -100,7 +114,9 @@ module.exports = (info, api, options) => {
   root.get().node.comments = comments;
 
   // add @module annotation
-  util.prependModuleAnnotation(j, root);
+  if (addModule) {
+    util.prependModuleAnnotation(j, root, currentModuleSymbol);
+  }
 
   return root.toSource({quote: 'single'});
 };
