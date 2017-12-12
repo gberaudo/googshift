@@ -156,10 +156,6 @@ module.exports.symbolToRelativePath = function (moduleName, name, sourceRoots) {
   let commonDepth = 1;
 
   if (moduleParts[0] !== parts[0]) {
-    if (parts[0] === 'ngeo') {
-      parts[0] = 'ngeo6';
-    }
-
     if (!sourceRoots || !sourceRoots.has(parts[0])) {
       return parts.join('/');
     }
@@ -184,9 +180,6 @@ module.exports.symbolToRelativePath = function (moduleName, name, sourceRoots) {
     }
   }
 
-  if (parts[0] === 'ngeo') {
-    parts[0] = 'ngeo6';
-  }
   const back = new Array(moduleLength - commonDepth).join('../') || './';
   let relative = back + parts.slice(commonDepth).join('/');
   if (relative.endsWith('/')) {
