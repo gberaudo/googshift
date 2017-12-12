@@ -73,9 +73,10 @@ module.exports = (info, api, options) => {
     if (!name) {
       throw new Error('Could not transform symbol ' + symbol + '; note that destructuring is not supported');
     }
+
     const importStatement = j.importDeclaration(
       [j.importDefaultSpecifier(j.identifier(name))],
-      j.literal(symbolToRelativePath(currentModuleSymbol, symbol, sourceRoots))
+      j.literal(symbolToRelativePath(currentModuleSymbol, symbol, sourceRoots, options['absolute-module']))
     );
     path.parent.replace(importStatement);
   });

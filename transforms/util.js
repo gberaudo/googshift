@@ -150,12 +150,12 @@ function findDivergingPart(path1, path2) {
   throw new Error(`Can not found diverging parts in ${path1} and ${path2}`);
 }
 
-module.exports.symbolToRelativePath = function (moduleName, name, sourceRoots) {
+module.exports.symbolToRelativePath = function (moduleName, name, sourceRoots, absoluteModule) {
   let moduleParts = moduleName.split('.');
   let parts = name.split('.');
   let commonDepth = 1;
 
-  if (moduleParts[0] !== parts[0]) {
+  if (moduleParts[0] !== parts[0] || absoluteModule) {
     if (!sourceRoots || !sourceRoots.has(parts[0])) {
       return parts.join('/');
     }
