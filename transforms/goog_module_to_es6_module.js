@@ -65,6 +65,9 @@ module.exports = (info, api, options) => {
       }
     }
   }
+  if (!currentModuleSymbol) {
+    currentModuleSymbol = info.path.replace(/\./g, '_').replace(/\//g, '.').replace(/_js$/, '');
+  }
 
   // Transform "const xx = goog.require('X.Y.Z');" into a relative path like "import xx from '../Y/Z';"
   root.find(j.VariableDeclarator, getGoogVariableDeclaration('require')).forEach(path => {
