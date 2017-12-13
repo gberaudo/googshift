@@ -98,6 +98,7 @@ module.exports = (info, api, options) => {
           right
         )
       ]);
+      assignment.comments = path.value.comments;
       path.replace(assignment);
     });
 
