@@ -150,16 +150,12 @@ function findDivergingPart(path1, path2) {
   throw new Error(`Can not found diverging parts in ${path1} and ${path2}`);
 }
 
-module.exports.symbolToRelativePath = function (moduleName, name, sourceRoots) {
+module.exports.symbolToRelativePath = function (moduleName, name, sourceRoots, absoluteModule) {
   let moduleParts = moduleName.split('.');
   let parts = name.split('.');
   let commonDepth = 1;
 
-  if (moduleParts[0] !== parts[0]) {
-    if (parts[0] === 'ngeo') {
-      parts[0] = 'ngeo6';
-    }
-
+  if (moduleParts[0] !== parts[0] || absoluteModule) {
     if (!sourceRoots || !sourceRoots.has(parts[0])) {
       return parts.join('/');
     }
@@ -184,9 +180,6 @@ module.exports.symbolToRelativePath = function (moduleName, name, sourceRoots) {
     }
   }
 
-  if (parts[0] === 'ngeo') {
-    parts[0] = 'ngeo6';
-  }
   const back = new Array(moduleLength - commonDepth).join('../') || './';
   let relative = back + parts.slice(commonDepth).join('/');
   if (relative.endsWith('/')) {
@@ -234,8 +227,8 @@ module.exports.createGoogRequireAssignment = function(j, identifier, symbol) {
   ]);
 };
 
-module.exports.prependModuleAnnotation = function(j, root) {
-  const comment = j.commentBlock('*\n * @module\n ');
+module.exports.prependModuleAnnotation = function(j, root, name) {
+  const comment = j.commentBlock(`*\n * @module ${name}\n`);
   const node = root.get().node;
   if (!node.comments) {
     node.comments = [comment];

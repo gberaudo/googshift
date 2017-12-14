@@ -22,6 +22,7 @@ module.exports = (info, api, options) => {
   const {comments} = root.find(j.Program).get('body', 0).node;
 
   let currentModuleSymbol;
+  let addModule = false;
 
   // Remove goog.module.declareLegacyNamespace
   root.find(j.ExpressionStatement, getGoog2ExpressionStatement('module', 'declareLegacyNamespace'))
@@ -37,6 +38,19 @@ module.exports = (info, api, options) => {
       }
       currentModuleSymbol = path.value.expression.arguments[0].value;
       path.replace();
+
+      addModule = true;
+      if (comments) {
+        for (const comment of comments) {
+          if (comment.value.indexOf('@module') >= 0) {
+            addModule = false;
+            const module = comment.value.match(/@module (.*)/g);
+            if (module != currentModuleSymbol) {
+              throw new Error('The @module does not have the right value');
+            }
+          }
+        }
+      }
     });
 
   // Append  "export default exports;" to the body
@@ -51,6 +65,9 @@ module.exports = (info, api, options) => {
       }
     }
   }
+  if (!currentModuleSymbol) {
+    currentModuleSymbol = info.path.replace(/\./g, '_').replace(/\//g, '.').replace(/_js$/, '');
+  }
 
   // Transform "const xx = goog.require('X.Y.Z');" into a relative path like "import xx from '../Y/Z';"
   root.find(j.VariableDeclarator, getGoogVariableDeclaration('require')).forEach(path => {
@@ -59,9 +76,10 @@ module.exports = (info, api, options) => {
     if (!name) {
       throw new Error('Could not transform symbol ' + symbol + '; note that destructuring is not supported');
     }
+
     const importStatement = j.importDeclaration(
       [j.importDefaultSpecifier(j.identifier(name))],
-      j.literal(symbolToRelativePath(currentModuleSymbol, symbol, sourceRoots))
+      j.literal(symbolToRelativePath(currentModuleSymbol, symbol, sourceRoots, options['absolute-module']))
     );
     path.parent.replace(importStatement);
   });
@@ -80,6 +98,7 @@ module.exports = (info, api, options) => {
           right
         )
       ]);
+      assignment.comments = path.value.comments;
       path.replace(assignment);
     });
 
@@ -93,14 +112,16 @@ module.exports = (info, api, options) => {
 
       root.find(j.Program).get('body').unshift(declaration);
     }
-    root.find(j.Program).get('body').push(j.exportDefaultDeclaration(j.identifier('exports')));
+    root.find(j.Program).get('body').push('\nexport default exports;\n');
   }
 
   // replace any initial comments
   root.get().node.comments = comments;
 
   // add @module annotation
-  util.prependModuleAnnotation(j, root);
+  if (addModule) {
+    util.prependModuleAnnotation(j, root, currentModuleSymbol);
+  }
 
   return root.toSource({quote: 'single'});
 };
