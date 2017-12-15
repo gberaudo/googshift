@@ -81,6 +81,7 @@ module.exports = (info, api, options) => {
       [j.importDefaultSpecifier(j.identifier(name))],
       j.literal(symbolToRelativePath(currentModuleSymbol, symbol, sourceRoots, options['absolute-module']))
     );
+    importStatement.comments = path.parent.value.comments;
     path.parent.replace(importStatement);
   });
 
