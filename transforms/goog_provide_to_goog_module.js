@@ -43,6 +43,7 @@ module.exports = (info, api, options) => {
           path.node.expression
         )
       ]);
+      assignment.comments = path.value.comments;
       path.replace(assignment);
     });
 
