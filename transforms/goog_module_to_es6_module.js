@@ -77,9 +77,14 @@ module.exports = (info, api, options) => {
       throw new Error('Could not transform symbol ' + symbol + '; note that destructuring is not supported');
     }
 
+    const file_path = symbolToRelativePath(currentModuleSymbol, symbol, sourceRoots, options['absolute-module']);
+    const name_ = j.identifier(name);
+    const nonDefaultImport = options['non-default-import'].split(',').indexOf(file_path) >= 0;
+    const package_ = options['package'].split(',').indexOf(file_path) >= 0;
+
     const importStatement = j.importDeclaration(
-      [j.importDefaultSpecifier(j.identifier(name))],
-      j.literal(symbolToRelativePath(currentModuleSymbol, symbol, sourceRoots, options['absolute-module']))
+      [nonDefaultImport ? j.importNamespaceSpecifier(name_) : j.importDefaultSpecifier(name_)],
+      package_ ? j.literal(file_path + '/index.js') : j.literal(file_path + '.js')
     );
     importStatement.comments = path.parent.value.comments;
     path.parent.replace(importStatement);
