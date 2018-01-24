@@ -1,6 +1,6 @@
 {
   "name": "googshift",
-  "version": "0.9.6",
+  "version": "0.9.7",
   "keywords": [
     "Google closure compiler",
     "ES6 module",

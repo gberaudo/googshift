@@ -79,8 +79,8 @@ module.exports = (info, api, options) => {
 
     const file_path = symbolToRelativePath(currentModuleSymbol, symbol, sourceRoots, options['absolute-module']);
     const name_ = j.identifier(name);
-    const nonDefaultImport = options['non-default-import'].split(',').indexOf(file_path) >= 0;
-    const package_ = options['package'].split(',').indexOf(file_path) >= 0;
+    const nonDefaultImport = options['non-default-import'] && options['non-default-import'].split(',').indexOf(file_path) >= 0;
+    const package_ = options['package'] && options['package'].split(',').indexOf(file_path) >= 0;
 
     const importStatement = j.importDeclaration(
       [nonDefaultImport ? j.importNamespaceSpecifier(name_) : j.importDefaultSpecifier(name_)],
