@@ -1,7 +1,7 @@
 const {
   getAssignmentExpressionStatement, getGoogExpressionStatement, getGoog2ExpressionStatement,
-  getGoogVariableDeclaration, symbolToRelativePath} = require('./util');
-const util = require('./util');
+  getGoogVariableDeclaration, symbolToRelativePath, prependModuleAnnotation, getCommentsString
+} = require('./util');
 
 
 module.exports = (info, api, options) => {
@@ -27,7 +27,7 @@ module.exports = (info, api, options) => {
   // Remove goog.module.declareLegacyNamespace
   root.find(j.ExpressionStatement, getGoog2ExpressionStatement('module', 'declareLegacyNamespace'))
     .forEach(path => {
-      path.replace();
+      path.replace(getCommentsString(path));
     });
 
   // Remove goog.module('module.symbol') and get the module symbol
@@ -37,7 +37,7 @@ module.exports = (info, api, options) => {
         throw new Error('Already existing goog.module found in this file', currentModuleSymbol);
       }
       currentModuleSymbol = path.value.expression.arguments[0].value;
-      path.replace();
+      path.replace(getCommentsString(path));
 
       addModule = true;
       if (comments) {
@@ -121,12 +121,9 @@ module.exports = (info, api, options) => {
     root.find(j.Program).get('body').push('\nexport default exports;\n');
   }
 
-  // replace any initial comments
-  root.get().node.comments = comments;
-
   // add @module annotation
   if (addModule) {
-    util.prependModuleAnnotation(j, root, currentModuleSymbol);
+    prependModuleAnnotation(j, root, currentModuleSymbol);
   }
 
   return root.toSource({quote: 'single'});
