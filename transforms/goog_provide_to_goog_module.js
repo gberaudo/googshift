@@ -13,9 +13,6 @@ module.exports = (info, api, options) => {
 
   let provideCount = 0;
 
-  // store any initial comments
-  const {comments} = root.find(j.Program).get('body', 0).node;
-
   // Replace goog.provide() with goog,module() and declare legacy namespace
   root.find(j.ExpressionStatement, getGoogExpressionStatement('provide'))
     .forEach(path => {
@@ -68,9 +65,6 @@ module.exports = (info, api, options) => {
         });
     }
   });
-
-  // replace any initial comments
-  root.get().node.comments = comments;
 
   return root.toSource();
 };

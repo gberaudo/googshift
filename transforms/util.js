@@ -228,11 +228,24 @@ module.exports.createGoogRequireAssignment = function(j, identifier, symbol) {
 };
 
 module.exports.prependModuleAnnotation = function(j, root, name) {
-  const comment = j.commentBlock(`*\n * @module ${name}\n`);
+  const comment = j.commentBlock(`*\n * @module ${name}\n `);
   const node = root.get().node;
   if (!node.comments) {
     node.comments = [comment];
   } else {
     node.comments.unshift(comment);
   }
+};
+
+module.exports.getCommentsString = function(node) {
+  const result = [];
+  for (const comment of node.value.comments || []) {
+    if (comment.type == 'CommentLine') {
+      result.push(`//${comment.value}`);
+    }
+    else {
+      result.push(`/*${comment.value}*/`);
+    }
+  }
+  return result.join('\n');
 };
