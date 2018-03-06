@@ -157,7 +157,7 @@ module.exports.symbolToRelativePath = function (moduleName, name, sourceRoots, a
 
   if (moduleParts[0] !== parts[0] || absoluteModule) {
     if (!sourceRoots || !sourceRoots.has(parts[0])) {
-      return parts.join('/') + '.js';
+      return parts.join('/');
     }
 
     if (!sourceRoots.has(moduleParts[0])) {
@@ -185,7 +185,7 @@ module.exports.symbolToRelativePath = function (moduleName, name, sourceRoots, a
   if (relative.endsWith('/')) {
     relative += 'index';
   }
-  return relative + '.js';
+  return relative;
 };
 
 

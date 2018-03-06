@@ -84,7 +84,7 @@ module.exports = (info, api, options) => {
 
     const importStatement = j.importDeclaration(
       [nonDefaultImport ? j.importNamespaceSpecifier(name_) : j.importDefaultSpecifier(name_)],
-      package_ ? j.literal(file_path + '/index.js') : j.literal(file_path)
+      package_ ? j.literal(file_path + '/index.js') : j.literal(file_path + '.js')
     );
     importStatement.comments = path.parent.value.comments;
     path.parent.replace(importStatement);
